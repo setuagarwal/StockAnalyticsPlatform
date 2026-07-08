@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: stock-analytics-backend
+
+  datasource:
+    url: jdbc:sqlite:./database/stock-analytics.db
+    driver-class-name: org.sqlite.JDBC
+
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+logging:
+  level:
+    root: INFO
+    com.stockanalytics: DEBUG
