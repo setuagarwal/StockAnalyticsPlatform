@@ -1,6 +1,6 @@
 package com.stockanalytics.controller;
 
-import com.stockanalytics.dto.HealthResponse;
+import com.stockanalytics.dto.response.HealthResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

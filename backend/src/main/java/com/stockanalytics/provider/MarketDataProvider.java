@@ -1,6 +1,6 @@
 package com.stockanalytics.provider;
 
-import com.stockanalytics.dto.InstrumentSearchResult;
+import com.stockanalytics.dto.response.InstrumentSearchResult;
 
 import java.util.List;
 

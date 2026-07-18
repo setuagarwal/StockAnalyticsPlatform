@@ -10,7 +10,7 @@
 
 package com.stockanalytics.service;
 
-import com.stockanalytics.dto.InstrumentSearchResult;
+import com.stockanalytics.dto.response.InstrumentSearchResult;
 import com.stockanalytics.provider.MarketDataProvider;
 import org.springframework.stereotype.Service;
 
