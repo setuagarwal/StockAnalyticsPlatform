@@ -11,7 +11,7 @@
 package com.stockanalytics.service;
 
 import com.stockanalytics.dto.response.InstrumentSearchResult;
-import com.stockanalytics.provider.MarketDataProvider;
+import com.stockanalytics.provider.market.MarketDataProvider;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

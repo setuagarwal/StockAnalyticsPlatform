@@ -1,4 +1,4 @@
-package com.stockanalytics.dto;
+package com.stockanalytics.dto.response;
 
 import java.time.OffsetDateTime;
 

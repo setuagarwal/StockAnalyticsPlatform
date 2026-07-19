@@ -15,6 +15,12 @@ spring:
       ddl-auto: update
     show-sql: false
 
+ market-data:
+  provider-order:
+    instrument-search:
+      - dummy-primary
+      - dummy-fallback
+
 logging:
   level:
     root: INFO
