@@ -15,7 +15,7 @@ spring:
       ddl-auto: update
     show-sql: false
 
- market-data:
+market-data:
   provider-order:
     instrument-search:
       - dummy-primary

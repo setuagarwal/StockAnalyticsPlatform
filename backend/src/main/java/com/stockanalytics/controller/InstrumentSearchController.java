@@ -8,10 +8,15 @@
 package com.stockanalytics.controller;
 
 import com.stockanalytics.dto.response.InstrumentSearchResult;
+import com.stockanalytics.provider.ProviderResult;
 import com.stockanalytics.service.InstrumentSearchService;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,23 +33,19 @@ public class InstrumentSearchController {
 
         this.instrumentSearchService = Objects.requireNonNull(
                 instrumentSearchService,
-                "instrumentSearchService must not be null");
+                "instrumentSearchService must not be null"
+        );
     }
 
-    /**
-     * Searches instruments by company name or symbol.
-     *
-     * Examples:
-     *
-     * /api/v1/instruments/search?q=reliance
-     * /api/v1/instruments/search?q=tcs
-     */
     @GetMapping("/search")
-    public List<InstrumentSearchResult> search(
-            @RequestParam("q")
+    public ResponseEntity<ProviderResult<List<InstrumentSearchResult>>> search(
+            @RequestParam(name = "query")
             @NotBlank(message = "Search query must not be blank")
             String query) {
 
-        return instrumentSearchService.search(query);
+        ProviderResult<List<InstrumentSearchResult>> result =
+                instrumentSearchService.search(query);
+
+        return ResponseEntity.ok(result);
     }
 }

@@ -12,6 +12,8 @@ package com.stockanalytics.provider.market;
 
 import com.stockanalytics.config.MarketDataProviderProperties;
 import com.stockanalytics.dto.response.InstrumentSearchResult;
+import com.stockanalytics.exception.MarketDataUnavailableException;
+import com.stockanalytics.exception.ProviderException;
 import com.stockanalytics.provider.ProviderResult;
 import org.springframework.stereotype.Component;
 
@@ -50,7 +52,7 @@ public class MarketDataProviderManager {
             );
         }
 
-        RuntimeException lastFailure = null;
+        ProviderException lastFailure = null;
 
         for (String providerCode : providerOrder) {
             MarketDataProvider provider = providersByCode.get(providerCode);
@@ -68,12 +70,12 @@ public class MarketDataProviderManager {
                         provider.getProviderCode(),
                         provider.getDisplayName()
                 );
-            } catch (RuntimeException exception) {
+            } catch (ProviderException exception) {
                 lastFailure = exception;
             }
         }
 
-        throw new IllegalStateException(
+        throw new MarketDataUnavailableException(
                 "All configured market-data providers failed",
                 lastFailure
         );
@@ -112,7 +114,7 @@ public class MarketDataProviderManager {
 
     private String requireNonBlank(String value, String message) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(message);
+            throw new IllegalStateException(message);
         }
 
         return value;
