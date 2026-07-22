@@ -1,5 +1,8 @@
 package com.stockanalytics.provider.market;
 
+import com.stockanalytics.domain.Country;
+import com.stockanalytics.domain.Exchange;
+import com.stockanalytics.domain.InstrumentType;
 import com.stockanalytics.dto.response.InstrumentSearchResult;
 import com.stockanalytics.provider.ProviderResult;
 import org.springframework.stereotype.Component;
@@ -28,10 +31,11 @@ public class DummyFallbackMarketDataProvider implements MarketDataProvider {
 
         List<InstrumentSearchResult> results = List.of(
                 new InstrumentSearchResult(
-                        "NSE",
+                        Exchange.NSE,
                         "TCS",
                         "Tata Consultancy Services",
-                        "STOCK"
+                        InstrumentType.EQUITY,
+                        Country.INDIA
                 )
         );
 
