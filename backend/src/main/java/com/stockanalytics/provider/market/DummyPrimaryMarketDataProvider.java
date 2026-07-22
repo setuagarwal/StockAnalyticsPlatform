@@ -2,6 +2,7 @@ package com.stockanalytics.provider.market;
 
 import com.stockanalytics.dto.response.InstrumentSearchResult;
 import com.stockanalytics.exception.ProviderException;
+import com.stockanalytics.provider.ProviderResult;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,6 +14,15 @@ public class DummyPrimaryMarketDataProvider implements MarketDataProvider {
     private static final String DISPLAY_NAME = "Dummy Primary Provider";
 
     @Override
+    public ProviderResult<List<InstrumentSearchResult>> searchInstruments(
+            String query) {
+
+        throw new ProviderException(
+                "Simulated failure from " + DISPLAY_NAME
+        );
+    }
+
+    @Override
     public String getProviderCode() {
         return PROVIDER_CODE;
     }
@@ -20,13 +30,6 @@ public class DummyPrimaryMarketDataProvider implements MarketDataProvider {
     @Override
     public String getDisplayName() {
         return DISPLAY_NAME;
-    }
-
-    @Override
-    public List<InstrumentSearchResult> searchInstruments(String query) {
-        throw new ProviderException(
-                "Simulated failure from " + DISPLAY_NAME
-        );
     }
 
     @Override

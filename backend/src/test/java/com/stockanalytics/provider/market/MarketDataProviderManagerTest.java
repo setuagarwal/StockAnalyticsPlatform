@@ -10,8 +10,16 @@ import org.mockito.InOrder;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class MarketDataProviderManagerTest {
 
@@ -21,14 +29,15 @@ class MarketDataProviderManagerTest {
         MarketDataProvider secondProvider = mock(MarketDataProvider.class);
 
         when(firstProvider.getProviderCode()).thenReturn("provider-one");
-        when(firstProvider.getDisplayName()).thenReturn("Provider One");
         when(firstProvider.isEnabled()).thenReturn(true);
 
         when(secondProvider.getProviderCode()).thenReturn("provider-two");
 
-        List<InstrumentSearchResult> expectedResults = List.of();
+        ProviderResult<List<InstrumentSearchResult>> expectedResult =
+                successfulResult("provider-one", "Provider One");
+
         when(firstProvider.searchInstruments("RELIANCE"))
-                .thenReturn(expectedResults);
+                .thenReturn(expectedResult);
 
         MarketDataProviderProperties properties =
                 createProperties("provider-one", "provider-two");
@@ -43,10 +52,14 @@ class MarketDataProviderManagerTest {
                 manager.searchInstruments("RELIANCE");
 
         assertNotNull(result);
+        assertSame(expectedResult, result);
+        assertEquals("provider-one", result.getProviderCode());
+        assertEquals("Provider One", result.getProviderDisplayName());
 
         verify(firstProvider).searchInstruments("RELIANCE");
         verify(secondProvider, never()).searchInstruments(anyString());
     }
+
     @Test
     void shouldUseSecondProviderWhenFirstProviderFails() {
         MarketDataProvider firstProvider = mock(MarketDataProvider.class);
@@ -58,12 +71,13 @@ class MarketDataProviderManagerTest {
                 .thenThrow(new ProviderException("Provider one failed"));
 
         when(secondProvider.getProviderCode()).thenReturn("provider-two");
-        when(secondProvider.getDisplayName()).thenReturn("Provider Two");
         when(secondProvider.isEnabled()).thenReturn(true);
 
-        List<InstrumentSearchResult> expectedResults = List.of();
+        ProviderResult<List<InstrumentSearchResult>> expectedResult =
+                successfulResult("provider-two", "Provider Two");
+
         when(secondProvider.searchInstruments("RELIANCE"))
-                .thenReturn(expectedResults);
+                .thenReturn(expectedResult);
 
         MarketDataProviderProperties properties =
                 createProperties("provider-one", "provider-two");
@@ -78,6 +92,9 @@ class MarketDataProviderManagerTest {
                 manager.searchInstruments("RELIANCE");
 
         assertNotNull(result);
+        assertSame(expectedResult, result);
+        assertEquals("provider-two", result.getProviderCode());
+        assertEquals("Provider Two", result.getProviderDisplayName());
 
         InOrder providerCallOrder =
                 inOrder(firstProvider, secondProvider);
@@ -88,6 +105,7 @@ class MarketDataProviderManagerTest {
         providerCallOrder.verify(secondProvider)
                 .searchInstruments("RELIANCE");
     }
+
     @Test
     void shouldThrowMarketDataUnavailableExceptionWhenAllProvidersFail() {
         MarketDataProvider firstProvider = mock(MarketDataProvider.class);
@@ -136,6 +154,7 @@ class MarketDataProviderManagerTest {
         verify(firstProvider).searchInstruments("RELIANCE");
         verify(secondProvider).searchInstruments("RELIANCE");
     }
+
     @Test
     void shouldThrowIllegalStateExceptionWhenNoProvidersAreConfigured() {
         MarketDataProviderProperties properties = createProperties();
@@ -157,6 +176,7 @@ class MarketDataProviderManagerTest {
                 exception.getMessage()
         );
     }
+
     @Test
     void shouldSkipDisabledProviderAndUseNextEnabledProvider() {
         MarketDataProvider disabledProvider = mock(MarketDataProvider.class);
@@ -169,12 +189,14 @@ class MarketDataProviderManagerTest {
 
         when(enabledProvider.getProviderCode())
                 .thenReturn("provider-two");
-        when(enabledProvider.getDisplayName())
-                .thenReturn("Provider Two");
         when(enabledProvider.isEnabled())
                 .thenReturn(true);
+
+        ProviderResult<List<InstrumentSearchResult>> expectedResult =
+                successfulResult("provider-two", "Provider Two");
+
         when(enabledProvider.searchInstruments("RELIANCE"))
-                .thenReturn(List.of());
+                .thenReturn(expectedResult);
 
         MarketDataProviderProperties properties =
                 createProperties("provider-one", "provider-two");
@@ -189,6 +211,7 @@ class MarketDataProviderManagerTest {
                 manager.searchInstruments("RELIANCE");
 
         assertNotNull(result);
+        assertSame(expectedResult, result);
 
         verify(disabledProvider, never())
                 .searchInstruments(anyString());
@@ -196,18 +219,21 @@ class MarketDataProviderManagerTest {
         verify(enabledProvider)
                 .searchInstruments("RELIANCE");
     }
+
     @Test
     void shouldSkipUnavailableProviderAndUseNextAvailableProvider() {
         MarketDataProvider availableProvider = mock(MarketDataProvider.class);
 
         when(availableProvider.getProviderCode())
                 .thenReturn("provider-two");
-        when(availableProvider.getDisplayName())
-                .thenReturn("Provider Two");
         when(availableProvider.isEnabled())
                 .thenReturn(true);
+
+        ProviderResult<List<InstrumentSearchResult>> expectedResult =
+                successfulResult("provider-two", "Provider Two");
+
         when(availableProvider.searchInstruments("RELIANCE"))
-                .thenReturn(List.of());
+                .thenReturn(expectedResult);
 
         MarketDataProviderProperties properties =
                 createProperties(
@@ -225,10 +251,23 @@ class MarketDataProviderManagerTest {
                 manager.searchInstruments("RELIANCE");
 
         assertNotNull(result);
+        assertSame(expectedResult, result);
 
         verify(availableProvider)
                 .searchInstruments("RELIANCE");
     }
+
+    private ProviderResult<List<InstrumentSearchResult>> successfulResult(
+            String providerCode,
+            String providerDisplayName) {
+
+        return new ProviderResult<>(
+                List.of(),
+                providerCode,
+                providerDisplayName
+        );
+    }
+
     private MarketDataProviderProperties createProperties(
             String... providerCodes) {
 

@@ -62,14 +62,7 @@ public class MarketDataProviderManager {
             }
 
             try {
-                List<InstrumentSearchResult> results =
-                        provider.searchInstruments(query);
-
-                return new ProviderResult<>(
-                        results,
-                        provider.getProviderCode(),
-                        provider.getDisplayName()
-                );
+                return provider.searchInstruments(query);
             } catch (ProviderException exception) {
                 lastFailure = exception;
             }

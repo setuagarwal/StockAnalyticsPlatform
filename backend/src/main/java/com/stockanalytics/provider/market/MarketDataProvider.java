@@ -9,6 +9,8 @@
 
 package com.stockanalytics.provider.market;
 
+import com.stockanalytics.provider.ProviderResult;
+
 import com.stockanalytics.dto.response.InstrumentSearchResult;
 
 import java.util.List;
@@ -21,7 +23,7 @@ public interface MarketDataProvider {
      * @param query symbol or company-name search text
      * @return matching financial instruments
      */
-    List<InstrumentSearchResult> searchInstruments(String query);
+    ProviderResult<List<InstrumentSearchResult>> searchInstruments(String query);
 
     /**
      * Returns the stable provider code used in configuration.

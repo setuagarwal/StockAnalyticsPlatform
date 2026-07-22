@@ -1,6 +1,7 @@
 package com.stockanalytics.provider.market;
 
 import com.stockanalytics.dto.response.InstrumentSearchResult;
+import com.stockanalytics.provider.ProviderResult;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,14 +23,22 @@ public class DummyFallbackMarketDataProvider implements MarketDataProvider {
     }
 
     @Override
-    public List<InstrumentSearchResult> searchInstruments(String query) {
-        return List.of(
+    public ProviderResult<List<InstrumentSearchResult>> searchInstruments(
+            String query) {
+
+        List<InstrumentSearchResult> results = List.of(
                 new InstrumentSearchResult(
-						"NSE",
+                        "NSE",
                         "TCS",
                         "Tata Consultancy Services",
                         "STOCK"
                 )
+        );
+
+        return new ProviderResult<>(
+                results,
+                PROVIDER_CODE,
+                DISPLAY_NAME
         );
     }
 
