@@ -83,7 +83,21 @@ public class YahooFinanceProvider implements MarketDataProvider {
                     .retrieve()
                     .bodyToMono(YahooSearchResponse.class)
                     .block();
-
+					if (response != null && response.quotes() != null) {
+						response.quotes()
+						.stream()
+						.filter(Objects::nonNull)
+						.forEach(quote ->
+								System.out.println(
+								"Yahoo raw result: "
+                                    + quote.symbol()
+                                    + " | "
+                                    + quote.exchange()
+                                    + " | "
+                                    + quote.shortname()
+													)
+								);
+																		}
             List<InstrumentSearchResult> results =
                     mapSearchResults(response);
 

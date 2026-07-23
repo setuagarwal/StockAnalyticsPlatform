@@ -1,5 +1,6 @@
 package com.stockanalytics.service.search;
 
+import com.stockanalytics.config.search.SearchPreferenceProperties;
 import com.stockanalytics.dto.response.InstrumentSearchResult;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,14 @@ public class InstrumentSearchScorer {
     private static final int NAME_CONTAINS_SCORE = 55;
     private static final int NO_MATCH_SCORE = 0;
 
+    private final SearchPreferenceProperties searchPreferenceProperties;
+
+    public InstrumentSearchScorer(
+            SearchPreferenceProperties searchPreferenceProperties
+    ) {
+        this.searchPreferenceProperties = searchPreferenceProperties;
+    }
+
     public int calculateScore(
             String query,
             InstrumentSearchResult result
@@ -39,6 +48,27 @@ public class InstrumentSearchScorer {
         String normalizedSymbol = normalize(result.symbol());
         String normalizedName = normalize(result.name());
 
+        int relevanceScore = calculateRelevanceScore(
+                normalizedQuery,
+                normalizedSymbol,
+                normalizedName
+        );
+
+        int exchangePreferenceScore =
+                searchPreferenceProperties.getExchangePreferenceScore(
+                        result.exchange()
+                );
+
+        int totalScore = relevanceScore + exchangePreferenceScore;
+
+        return totalScore;
+    }
+
+    private int calculateRelevanceScore(
+            String normalizedQuery,
+            String normalizedSymbol,
+            String normalizedName
+    ) {
         if (normalizedSymbol.equals(normalizedQuery)) {
             return EXACT_SYMBOL_SCORE;
         }

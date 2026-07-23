@@ -44,6 +44,17 @@ market-data:
     dummy-fallback:
       enabled: true
 
+search:
+  preference:
+    default-exchange-score: 0
+    exchange-preference-scores:
+      NSE: 20
+      BSE: 18
+      NYSE: 8
+      NASDAQ: 8
+      LSE: 6
+      FRANKFURT: 4
+      
 logging:
   level:
     root: INFO
