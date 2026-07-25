@@ -57,9 +57,17 @@ public class InstrumentSearchScorer {
         int exchangePreferenceScore =
                 searchPreferenceProperties.getExchangePreferenceScore(
                         result.exchange()
-                );
+        );
+				
+		int instrumentTypePreferenceScore =
+				searchPreferenceProperties.getInstrumentTypePreferenceScore(
+						result.instrumentType()
+		);		
 
-        int totalScore = relevanceScore + exchangePreferenceScore;
+        int totalScore = 
+				relevanceScore 
+				+ exchangePreferenceScore 
+				+ instrumentTypePreferenceScore;
 
         return totalScore;
     }

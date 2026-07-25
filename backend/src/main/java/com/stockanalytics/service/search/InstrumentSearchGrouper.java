@@ -1,5 +1,6 @@
 package com.stockanalytics.service.search;
 
+import com.stockanalytics.config.search.SearchPreferenceProperties;
 import com.stockanalytics.dto.response.InstrumentSearchResult;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,12 @@ import java.util.Set;
  */
 @Component
 public class InstrumentSearchGrouper {
+
+    private final SearchPreferenceProperties searchPreferenceProperties;
+
+    public InstrumentSearchGrouper(SearchPreferenceProperties searchPreferenceProperties) {
+        this.searchPreferenceProperties = searchPreferenceProperties;
+    }
 
     private static final Set<String> COMPANY_SUFFIXES = Set.of(
             "LIMITED",
@@ -62,6 +69,12 @@ public class InstrumentSearchGrouper {
 
         return groupedResults.values()
                 .stream()
+                .peek(group -> group.sort(
+                        java.util.Comparator.comparingInt(
+                                (InstrumentSearchResult result) ->
+                                        searchPreferenceProperties.getExchangePreferenceScore(result.exchange())
+                        ).reversed()
+                ))
                 .flatMap(List::stream)
                 .toList();
     }

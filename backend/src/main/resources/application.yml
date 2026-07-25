@@ -46,7 +46,9 @@ market-data:
 
 search:
   preference:
+
     default-exchange-score: 0
+
     exchange-preference-scores:
       NSE: 20
       BSE: 18
@@ -54,6 +56,15 @@ search:
       NASDAQ: 8
       LSE: 6
       FRANKFURT: 4
+
+    default-instrument-type-score: 0
+
+    instrument-type-preference-scores:
+      EQUITY: 20
+      ETF: 15
+      MUTUAL_FUND: 10
+      INDEX: 5
+      UNKNOWN: 0
       
 logging:
   level:

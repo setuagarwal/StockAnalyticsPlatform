@@ -1,6 +1,7 @@
 package com.stockanalytics.config.search;
 
 import com.stockanalytics.domain.Exchange;
+import com.stockanalytics.domain.InstrumentType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,8 @@ import java.util.Map;
 /**
  * Configurable preferences used while ranking instrument search results.
  *
- * Exchange preference scores are loaded from application.yml.
+ * Exchange and instrument-type preference scores are loaded
+ * from application.yml.
  */
 @Component
 @ConfigurationProperties(prefix = "search.preference")
@@ -21,6 +23,11 @@ public class SearchPreferenceProperties {
 
     private Map<Exchange, Integer> exchangePreferenceScores =
             new EnumMap<>(Exchange.class);
+
+    private int defaultInstrumentTypeScore = 0;
+
+    private Map<InstrumentType, Integer> instrumentTypePreferenceScores =
+            new EnumMap<>(InstrumentType.class);
 
     public int getDefaultExchangeScore() {
         return defaultExchangeScore;
@@ -44,11 +51,6 @@ public class SearchPreferenceProperties {
         }
     }
 
-    /**
-     * Returns the configured preference score for an exchange.
-     *
-     * Unconfigured and null exchanges receive the configured default score.
-     */
     public int getExchangePreferenceScore(Exchange exchange) {
         if (exchange == null) {
             return defaultExchangeScore;
@@ -57,6 +59,56 @@ public class SearchPreferenceProperties {
         return exchangePreferenceScores.getOrDefault(
                 exchange,
                 defaultExchangeScore
+        );
+    }
+
+    public int getDefaultInstrumentTypeScore() {
+        return defaultInstrumentTypeScore;
+    }
+
+    public void setDefaultInstrumentTypeScore(
+            int defaultInstrumentTypeScore
+    ) {
+        this.defaultInstrumentTypeScore = defaultInstrumentTypeScore;
+    }
+
+    public Map<InstrumentType, Integer>
+            getInstrumentTypePreferenceScores() {
+
+        return Collections.unmodifiableMap(
+                instrumentTypePreferenceScores
+        );
+    }
+
+    public void setInstrumentTypePreferenceScores(
+            Map<InstrumentType, Integer>
+                    instrumentTypePreferenceScores
+    ) {
+        this.instrumentTypePreferenceScores =
+                new EnumMap<>(InstrumentType.class);
+
+        if (instrumentTypePreferenceScores != null) {
+            this.instrumentTypePreferenceScores.putAll(
+                    instrumentTypePreferenceScores
+            );
+        }
+    }
+
+    /**
+     * Returns the configured preference score for an instrument type.
+     *
+     * Unconfigured and null types receive the configured default score.
+     */
+    public int getInstrumentTypePreferenceScore(
+            InstrumentType instrumentType
+    ) {
+        if (instrumentType == null) {
+            return defaultInstrumentTypeScore;
+        }
+
+        return instrumentTypePreferenceScores.getOrDefault(
+                instrumentType,
+                defaultInstrumentTypeScore
         );
     }
 }
