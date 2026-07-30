@@ -3,10 +3,13 @@ package com.stockanalytics.provider.market;
 import com.stockanalytics.domain.Country;
 import com.stockanalytics.domain.Exchange;
 import com.stockanalytics.domain.InstrumentType;
+import com.stockanalytics.domain.market.HistoricalPricePoint;
+import com.stockanalytics.domain.market.HistoricalRange;
+import com.stockanalytics.domain.market.MarketDataInterval;
 import com.stockanalytics.dto.response.InstrumentSearchResult;
+import com.stockanalytics.exception.ProviderException;
 import com.stockanalytics.provider.ProviderResult;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 
 @Component
@@ -43,6 +46,17 @@ public class DummyFallbackMarketDataProvider implements MarketDataProvider {
                 results,
                 PROVIDER_CODE,
                 DISPLAY_NAME
+        );
+    }
+
+    @Override
+    public ProviderResult<List<HistoricalPricePoint>> getHistoricalPrices(
+            String symbol,
+            HistoricalRange range,
+            MarketDataInterval interval) {
+
+        throw new ProviderException(
+                "Historical prices are not implemented for " + DISPLAY_NAME
         );
     }
 

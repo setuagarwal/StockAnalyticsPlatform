@@ -1,10 +1,12 @@
 package com.stockanalytics.provider.market;
 
+import com.stockanalytics.domain.market.HistoricalPricePoint;
+import com.stockanalytics.domain.market.HistoricalRange;
+import com.stockanalytics.domain.market.MarketDataInterval;
 import com.stockanalytics.dto.response.InstrumentSearchResult;
 import com.stockanalytics.exception.ProviderException;
 import com.stockanalytics.provider.ProviderResult;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 
 @Component
@@ -19,6 +21,17 @@ public class DummyPrimaryMarketDataProvider implements MarketDataProvider {
 
         throw new ProviderException(
                 "Simulated failure from " + DISPLAY_NAME
+        );
+    }
+
+    @Override
+    public ProviderResult<List<HistoricalPricePoint>> getHistoricalPrices(
+            String symbol,
+            HistoricalRange range,
+            MarketDataInterval interval) {
+
+        throw new ProviderException(
+                "Simulated historical-price failure from " + DISPLAY_NAME
         );
     }
 

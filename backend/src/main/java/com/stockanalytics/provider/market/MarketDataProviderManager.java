@@ -11,11 +11,14 @@
 package com.stockanalytics.provider.market;
 
 import com.stockanalytics.config.MarketDataProviderProperties;
+import com.stockanalytics.domain.market.HistoricalPricePoint;
+import com.stockanalytics.domain.market.HistoricalRange;
 import com.stockanalytics.dto.response.InstrumentSearchResult;
 import com.stockanalytics.exception.MarketDataUnavailableException;
 import com.stockanalytics.exception.ProviderException;
 import com.stockanalytics.provider.ProviderResult;
 import org.springframework.stereotype.Component;
+import com.stockanalytics.domain.market.MarketDataInterval;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -69,7 +72,44 @@ public class MarketDataProviderManager {
         }
 
         throw new MarketDataUnavailableException(
-                "All configured market-data providers failed",
+                "All configured market-data providers failed for instrument search",
+                lastFailure
+        );
+    }
+
+    public ProviderResult<List<HistoricalPricePoint>> getHistoricalPrices(
+            String symbol,
+            HistoricalRange range,
+			MarketDataInterval interval) {
+
+        List<String> providerOrder = providerProperties
+                .getProviderOrder()
+                .getInstrumentSearch();
+
+        if (providerOrder.isEmpty()) {
+            throw new IllegalStateException(
+                    "No providers are configured for historical prices"
+            );
+        }
+
+        ProviderException lastFailure = null;
+
+        for (String providerCode : providerOrder) {
+            MarketDataProvider provider = providersByCode.get(providerCode);
+
+            if (provider == null || !provider.isEnabled()) {
+                continue;
+            }
+
+            try {
+                return provider.getHistoricalPrices(symbol, range, interval);
+            } catch (ProviderException exception) {
+                lastFailure = exception;
+            }
+        }
+
+        throw new MarketDataUnavailableException(
+                "All configured market-data providers failed for historical prices",
                 lastFailure
         );
     }

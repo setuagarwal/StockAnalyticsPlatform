@@ -145,7 +145,7 @@ class MarketDataProviderManagerTest {
                 );
 
         assertEquals(
-                "All configured market-data providers failed",
+                "All configured market-data providers failed for instrument search",
                 exception.getMessage()
         );
 
